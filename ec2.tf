@@ -92,7 +92,10 @@ resource "aws_instance" "proxy1" {
   provisioner "local-exec" {
     command = <<EOT
     echo ssh -i ${local.key_path} ec2-user@${aws_instance.proxy1.public_ip} > ${local.bash_bin}/ssh.sh
+    echo "echo Starting connection tunnel with the server" > ${local.bash_bin}/proxy_start.sh
+    echo ssh -D ${random_integer.find_port.result} -f -C -q -N -i ./key/proxy-server-key ec2-user@${aws_instance.proxy1.public_ip} -vv >> ${local.bash_bin}/proxy_start.sh
     chmod 750 ${local.bash_bin}/*
+    sleep 10
     EOT
   }
 }
